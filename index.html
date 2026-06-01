@@ -22,7 +22,18 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; font-size: 16px; }
-body { font-family: var(--f-body); background: var(--cream); color: var(--ink); overflow-x: hidden; cursor: none; }
+
+/* CONTENT PROTECTION: Disables text selection across the whole app */
+body { 
+  font-family: var(--f-body); 
+  background: var(--cream); 
+  color: var(--ink); 
+  overflow-x: hidden; 
+  cursor: none; 
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
+}
 
 /* CURSOR */
 .cur { position: fixed; width: 8px; height: 8px; border-radius: 50%; background: var(--terra); pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); transition: width .3s var(--spring), height .3s var(--spring); }
@@ -194,26 +205,6 @@ h2.sh.w em { color: var(--copper); }
 .cf-t { font-size: 14px; font-weight: 600; color: var(--cream); margin-bottom: 3px; }
 .cf-b { font-size: 12px; color: rgba(250,246,238,.4); line-height: 1.6; font-weight: 300; }
 
-/* CROP DEEP DIVE */
-#crops { background: var(--parch); }
-.crop-tabs { display: flex; gap: 0; border-radius: 10px; overflow: hidden; border: 1px solid rgba(0,0,0,.08); background: var(--white); margin-bottom: 32px; flex-wrap: wrap; }
-.crop-tab { flex: 1; min-width: 120px; padding: 12px 16px; border: none; background: none; font-family: var(--f-body); font-size: 12px; font-weight: 600; color: var(--ash); cursor: pointer; text-align: center; transition: all .25s; border-right: 1px solid rgba(0,0,0,.06); letter-spacing: .3px; }
-.crop-tab:last-child { border-right: none; }
-.crop-tab.active { background: var(--terra); color: var(--white); }
-.crop-tab:hover:not(.active) { background: var(--parch); color: var(--ink); }
-.crop-panel { display: none; animation: fadeIn .35s var(--ease); }
-.crop-panel.active { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-.cp-heading { font-family: var(--f-display); font-size: 28px; font-weight: 300; color: var(--ink); margin-bottom: 8px; }
-.cp-heading em { font-style: italic; color: var(--terra); }
-
-.cp-intro { font-size: 14px; font-weight: 300; color: var(--slate); line-height: 1.75; margin-bottom: 20px; }
-.cp-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.cp-table th { text-align: left; padding: 8px 12px; font-family: var(--f-mono); font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--ash); border-bottom: 1px solid rgba(0,0,0,.07); }
-.cp-table td { padding: 9px 12px; border-bottom: 1px solid rgba(0,0,0,.04); color: var(--slate); font-weight: 300; vertical-align: top; }
-.cp-table tr:last-child td { border-bottom: none; }
-.cp-table tr:hover td { background: rgba(0,0,0,.02); }
-
 /* PROCESS */
 #process { background: var(--white); }
 .proc-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin-top: 56px; position: relative; }
@@ -266,7 +257,6 @@ body::after { content: ''; position: fixed; inset: 0; opacity: .022; pointer-eve
   .proc-steps { grid-template-columns: 1fr 1fr; gap: 28px; } .proc-steps::before { display: none; }
   .vis-pillars { grid-template-columns: 1fr 1fr; }
   .breadth-inner { flex-direction: column; } .br-col { border-right: none; border-bottom: 1px solid rgba(250,246,238,.07); padding: 20px 24px; }
-  .crop-panel.active { grid-template-columns: 1fr; }
   nav { padding: 0 24px; } .nav-links { display: none; }
   .con { padding: 0 24px; }
   footer { padding: 18px 24px; }
@@ -885,6 +875,29 @@ function toggleSys(card) {
 /* TICKER DUPLICATE for seamless loop */
 const track = document.getElementById('tick');
 if (track) { const clone = track.innerHTML; track.innerHTML += clone }
+
+/* =========================================
+   SECURITY SCRIPTS (Frontend Protection)
+   ========================================= */
+
+// 1. Disable Right-Click (Context Menu)
+document.addEventListener('contextmenu', event => event.preventDefault());
+
+// 2. Disable Keyboard Shortcuts for Developer Tools and Copying
+document.onkeydown = function(e) {
+  // F12
+  if(e.keyCode == 123) return false;
+  // Ctrl+Shift+I (Chrome DevTools)
+  if(e.ctrlKey && e.shiftKey && e.keyCode == 73) return false;
+  // Ctrl+Shift+J (Chrome Console)
+  if(e.ctrlKey && e.shiftKey && e.keyCode == 74) return false;
+  // Ctrl+U (View Page Source)
+  if(e.ctrlKey && e.keyCode == 85) return false;
+  // Ctrl+C (Copy)
+  if(e.ctrlKey && e.keyCode == 67) return false;
+  // Mac Command+Option+I
+  if(e.metaKey && e.altKey && e.keyCode == 73) return false;
+};
 </script>
 </body>
 </html>
